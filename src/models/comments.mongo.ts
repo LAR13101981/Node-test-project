@@ -4,7 +4,7 @@ import { Post } from './posts.mongo';
 
 export interface Comment extends Document {
   author: User;
-  commentOn: Post;
+  postTitle: string;
   content: string;
   date: Date;
 }
@@ -22,9 +22,9 @@ const commentsSchema: Schema<Comment> = new Schema({
     type: Date,
     default: Date.now,
   },
-  commentOn: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Post',
+  postTitle: {
+    type: String,
+    required: true,
   },
 });
 

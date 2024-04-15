@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { UserClass } from '../models/users.model';
+import userRouter from '../routes/userRoutes';
 import { user } from '../models/users.mongo';
 
 export const userInstance = new UserClass(user);
@@ -17,7 +18,7 @@ export const httpCreateUser: RequestHandler = async (req, res) => {
 
 export const httpSigninUser: RequestHandler = async (req, res) => {
   try {
-    const token = await userInstance.signinUser(req.body);
+    const token = await userInstance.signInUser(req.body);
 
     res.status(202).json({ message: 'Succesfully logged in', token });
   } catch (error) {
@@ -39,7 +40,7 @@ export const httpDeleteUser: RequestHandler = async (req, res) => {
   try {
     const user = await userInstance.deleteUser(req.body);
 
-    res.status(202).json({ message: 'User Deleted' });
+    res.status(200).json({ message: 'User Deleted' });
   } catch (error) {
     res.status(400).json({ error: `${error}` });
   }

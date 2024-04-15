@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { Post } from './posts.mongo';
 import { ValidationResult } from 'joi';
-import { PostValidation } from '../services/validations/postValidations';
+import { PostValidation } from '../services/validations/postValidationSchema';
 import { User } from './users.mongo';
 
 export class PostClass {
@@ -13,14 +13,8 @@ export class PostClass {
 
   async createNewPost(postData: Post, currentUser: User) {
     try {
-      if (!postData || !currentUser) {
-        throw new Error('Argument is missing');
-      }
-
-      const validationResult: ValidationResult =
-        PostValidation.createPost.validate(postData);
-      if (validationResult.error) {
-        throw new Error(`Validation Error: ${validationResult.error.details}`);
+      if (!currentUser) {
+        throw new Error('There is no user');
       }
 
       if (postData.content.length > 100) {
@@ -52,28 +46,28 @@ export class PostClass {
         throw new Error("Post title doesn't exists");
       }
 
-      const isLiked = existingPost.likes.includes(currentUser.id);
+      const postId = existingPost._id;
+
+      const isLiked = await this.model.exists({
+        _id: postId,
+        likes: currentUser._id,
+      });
 
       if (isLiked) {
-        existingPost.likes = existingPost.likes.filter(
-          (userId) => userId.toString() !== currentUser._id
+        await this.model.updateOne(
+          { _id: postId },
+          { $pull: { likes: currentUser._id } }
         );
       } else {
-        existingPost.likes.push(currentUser._id);
+        await this.model.updateOne(
+          { _id: postId },
+          { $addToSet: { likes: currentUser._id } }
+        );
       }
-
-      await existingPost.save();
 
       return existingPost;
     } catch (error) {
       throw new Error(`Failed to like/unlike post: ${error}`);
-    }
-  }
-
-  async getAllUserPosts(userData: User) {
-    try {
-    } catch (error) {
-      throw new Error(`Failed to create post: ${error}`);
     }
   }
 }

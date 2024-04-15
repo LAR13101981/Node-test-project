@@ -3,13 +3,12 @@ import { checkToken } from '../services/authentication/check-auth';
 import {
   httpCreatePost,
   httpLikeUnlikePost,
-  httpGetAllUserPosts,
 } from '../controllers/postController';
+import { validatePost } from '../services/validations/postValidationMiddleare';
 
 const postRouter = Router();
 
-postRouter.post('/createpost', checkToken, httpCreatePost);
-postRouter.get('/getuserposts', checkToken, httpGetAllUserPosts);
+postRouter.post('/createpost', checkToken, validatePost, httpCreatePost);
 postRouter.patch('/likeunlike', checkToken, httpLikeUnlikePost);
 
 export default postRouter;

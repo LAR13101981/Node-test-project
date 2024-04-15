@@ -7,11 +7,15 @@ import {
   httpDeleteUser,
 } from '../controllers/userController';
 import { checkToken } from '../services/authentication/check-auth';
+import {
+  validateSignUp,
+  validateSignIn,
+} from '../services/validations/userValidationMiddleware';
 
 const userRouter = Router();
 
-userRouter.post('/signup', httpCreateUser);
-userRouter.post('/signin', httpSigninUser);
+userRouter.put('/', validateSignUp, httpCreateUser);
+userRouter.post('/signin', validateSignIn, httpSigninUser);
 userRouter.patch('/followunfollow', checkToken, httpFollowUnfollowUsers);
 userRouter.get('/myinfo', checkToken, httpGetUserInfo);
 userRouter.delete('/userdelete', checkToken, httpDeleteUser);

@@ -34,13 +34,3 @@ export const httpLikeUnlikePost: RequestHandler = async (req, res) => {
     res.status(401).json({ error: `${error}` });
   }
 };
-
-export const httpGetAllUserPosts: RequestHandler = async (req, res) => {
-  try {
-    const userData = req.user;
-
-    const getPosts = await postInstance.getAllUserPosts(userData);
-  } catch (error) {
-    res.status(401).json({ error: `${error}` });
-  }
-};

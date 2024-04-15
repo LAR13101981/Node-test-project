@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Comment } from './comments.mongo';
+import { Comment, comment } from './comments.mongo';
 import { User } from './users.mongo';
 import { post } from './posts.mongo';
 
@@ -15,6 +15,7 @@ export class CommentClass {
       if (!commentData || !userData) {
         throw new Error('Argument missing');
       }
+
       //Finding post by title
       const existingPost = await post.findOne({ title: commentData.postTitle });
 
@@ -25,11 +26,13 @@ export class CommentClass {
         commentData.content = commentData.content.substring(0, 100);
       }
 
+      const postId = existingPost._id;
+
       // Creating the comment document
       const newComment = new this.model({
         author: userData._id,
         content: commentData.content,
-        postTitle: existingPost._id,
+        postTitle: postId,
       });
 
       // Saving the comment

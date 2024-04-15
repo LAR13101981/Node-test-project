@@ -1,7 +1,5 @@
 import { User } from './users.mongo';
 import { Model } from 'mongoose';
-import { ValidationResult } from 'joi';
-import { UserValidation } from '../services/validations/userValidations';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -32,14 +30,6 @@ export class UserClass {
   // Method to register a new User
   async createNewUser(userData: User): Promise<User> {
     try {
-      // Validating input user data
-      const validationResult: ValidationResult =
-        UserValidation.signUp.validate(userData);
-
-      if (validationResult.error) {
-        throw new Error(`Validation Error: ${validationResult.error.details}`);
-      }
-
       // Check if the user with the same email or username already exists
       const existingUser = await this.model.findOne(
         { email: userData.email },
@@ -63,15 +53,8 @@ export class UserClass {
     }
   }
 
-  async signinUser(userData: User): Promise<string> {
+  async signInUser(userData: User): Promise<string> {
     try {
-      // Validating user sign in data
-      const validationResult: ValidationResult =
-        UserValidation.signIn.validate(userData);
-
-      if (validationResult.error) {
-        throw new Error(`Validation Error: ${validationResult.error.details}`);
-      }
       // Check if the user with the same username already exists
       const existingUser = await this.model.findOne({
         userName: userData.userName,
@@ -108,7 +91,6 @@ export class UserClass {
   }
 
   // Method to get User information
-
   async getUserInfo(userData: User): Promise<User> {
     try {
       const existingUser = await this.findUserByName(userData);
@@ -119,7 +101,6 @@ export class UserClass {
   }
 
   // Method to delete an existing User
-
   async deleteUser(userData: User): Promise<User> {
     try {
       // Checking if both userName and email exists in DB
@@ -130,26 +111,34 @@ export class UserClass {
       throw new Error(`${error}`);
     }
   }
-  // Method to follow/ unfollow another user
 
+  // Method to follow / unfollow another user
   async followUnfollowUser(currentUser: User, userData: User) {
     try {
-      const singInUser = await this.findUserByName(currentUser);
+      const signInUser = await this.findUserByName(currentUser);
       const targetUser = await this.findUserByName(userData);
-      const isFollowing = singInUser.following.includes(targetUser._id);
+
+      const isFollowing = signInUser.following.includes(targetUser._id);
+
       if (isFollowing) {
-        singInUser.following = singInUser.following.filter(
-          (userId) => userId.toString() !== targetUser._id.toString()
+        await this.model.updateOne(
+          { _id: signInUser._id },
+          { $pull: { following: targetUser._id } }
         );
-        targetUser.followers = targetUser.followers.filter(
-          (userId) => userId.toString() !== singInUser.id.toString()
+        await this.model.updateOne(
+          { _id: targetUser._id },
+          { $pull: { followers: signInUser._id } }
         );
       } else {
-        singInUser.following.push(targetUser.id);
-        targetUser.followers.push(singInUser._id);
+        await this.model.updateOne(
+          { _id: signInUser._id },
+          { $addToSet: { following: targetUser._id } }
+        );
+        await this.model.updateOne(
+          { _id: targetUser._id },
+          { $addToSet: { followers: signInUser._id } }
+        );
       }
-      await targetUser.save();
-      await singInUser.save();
     } catch (error) {
       throw new Error(`${error}`);
     }
@@ -161,7 +150,6 @@ export class UserClass {
       const existingUser = await this.findUserByName(userData);
 
       // Update the user's posts array with the created post's ID
-
       existingUser.posts.push(postID);
 
       // Save the updated user object
