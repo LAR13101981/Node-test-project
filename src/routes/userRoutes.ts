@@ -15,7 +15,7 @@ import {
 const userRouter = Router();
 
 userRouter.put('/', validateSignUp, httpCreateUser);
-userRouter.post('/signin', validateSignIn, httpSigninUser);
+userRouter.post('/', validateSignIn, httpSigninUser);
 userRouter.patch('/followunfollow', checkToken, httpFollowUnfollowUsers);
 userRouter.get('/myinfo', checkToken, httpGetUserInfo);
 userRouter.delete('/userdelete', checkToken, httpDeleteUser);

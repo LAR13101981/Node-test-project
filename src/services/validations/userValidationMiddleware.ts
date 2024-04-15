@@ -15,10 +15,6 @@ export const validateSignUp = (
     { abortEarly: false }
   );
 
-  //if (validationResult.error) {
-  //  throw new Error(`Check your data and try again, Validation Error`);
-  //}
-
   if (validationResult.error) {
     const validationErrors = validationResult.error.details.map((error) => ({
       message: error.message,
@@ -61,5 +57,3 @@ export const validateSignIn = (
 
   next();
 };
-
-const functionFeclah = (parametro: string) => {};

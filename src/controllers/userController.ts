@@ -30,7 +30,7 @@ export const httpGetUserInfo: RequestHandler = async (req, res) => {
   try {
     const userInfo = await userInstance.getUserInfo(req.user);
 
-    res.status(200).json({ messange: 'Here is your User Data', userInfo });
+    res.status(200).json({ message: 'Here is your User Data', userInfo });
   } catch (error) {
     res.status(400).json({ error: `${error}` });
   }

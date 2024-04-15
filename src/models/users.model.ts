@@ -105,6 +105,10 @@ export class UserClass {
     try {
       // Checking if both userName and email exists in DB
       const existingUser = await this.findUserByName(userData);
+
+      if (!existingUser) {
+        throw new Error('Invalid username or email, try again');
+      }
       //Deleting existing user
       return await existingUser.deleteOne({ _id: existingUser._id });
     } catch (error) {
@@ -140,7 +144,7 @@ export class UserClass {
         );
       }
     } catch (error) {
-      throw new Error(`${error}`);
+      throw new Error(`Failed to follow/unfollow user: ${error}`);
     }
   }
 
