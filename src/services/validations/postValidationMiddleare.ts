@@ -18,7 +18,8 @@ export const validatePost = (
     PostValidation.createPost.validate(postData);
 
   if (validationResult.error) {
-    throw new Error(`Validation Error: ${validationResult.error.details}`);
+    res.status(401).json({ error: `${Error}` });
+    throw new Error(`Validation Error: ${Error}`);
   }
 
   next();

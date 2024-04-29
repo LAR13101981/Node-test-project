@@ -1,7 +1,5 @@
 import { Model } from 'mongoose';
 import { Post } from './posts.mongo';
-import { ValidationResult } from 'joi';
-import { PostValidation } from '../services/validations/postValidationSchema';
 import { User } from './users.mongo';
 
 export class PostClass {
@@ -15,6 +13,13 @@ export class PostClass {
     try {
       if (!currentUser) {
         throw new Error('There is no user');
+      }
+
+      if (!postData.content) {
+        throw new Error('This post has no content');
+      }
+      if (!postData.title) {
+        throw new Error('This post is missing a title');
       }
 
       if (postData.content.length > 100) {

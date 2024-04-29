@@ -21,3 +21,4 @@ userRouter.get('/myinfo', checkToken, httpGetUserInfo);
 userRouter.delete('/userdelete', checkToken, httpDeleteUser);
 
 export default userRouter;
+

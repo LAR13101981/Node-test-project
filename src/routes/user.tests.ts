@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongoServer: MongoMemoryServer;
+let userToken: string;
+
 const userData = {
   userName: 'testuser',
   firstName: 'fistnametest',
@@ -11,7 +13,6 @@ const userData = {
   password: 'testpassword',
   email: 'test@example.com',
 };
-let userToken: string;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
